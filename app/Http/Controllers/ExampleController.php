@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+
 class ExampleController extends Controller
 {
     /**
@@ -14,5 +16,9 @@ class ExampleController extends Controller
         //
     }
 
-    //
+    public function index()
+    {
+        dd(Storage::disk('google')->allFiles());
+        return 'test example';
+    }
 }
