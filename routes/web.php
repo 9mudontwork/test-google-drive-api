@@ -17,6 +17,27 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('/example', [
-    'as' => 'example', 'uses' => 'ExampleController@index'
-]);
+// $router->get('/example', [
+//     'as' => 'example', 'uses' => 'ExampleController@index'
+// ]);
+
+$router->group([
+    // 'namespace' => 'Example',
+    'as' => 'examples',
+], function () use ($router) {
+
+    $router->get('/access-token', [
+        'as' => 'access_token',
+        'uses' => 'ExampleController@getAccessTokens',
+    ]);
+
+    $router->get('/callback', [
+        'as' => 'callback',
+        'uses' => 'ExampleController@callback'
+    ]);
+
+    $router->get('/test', [
+        'as' => 'test',
+        'uses' => 'ExampleController@getAuthConfigFile',
+    ]);
+});
