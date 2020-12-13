@@ -30,19 +30,29 @@ class ExampleController extends Controller
         return 'test example';
     }
 
-    public function getAccessTokens()
+    public function getAuthCode()
     {
         $googleClient = new GoogleClient();
         $googleClient->setAuthConfig($this->getAuthConfigFile());
         $googleClient->setRedirectUri(url('/callback'));
-        $googleClient->setScopes('email');
+        $googleClient->setScopes(Google_Service_Drive::DRIVE);
         $googleClient->setAccessType('offline');
 
-        if ($googleClient->getAccessToken()) {
-            return $googleClient->verifyIdToken();
-        } else {
-            return $googleClient->createAuthUrl();
-        }
+        return $googleClient->createAuthUrl();
+    }
+
+    public function getAccessToken()
+    {
+        $googleClient = new GoogleClient();
+        $googleClient->setAuthConfig($this->getAuthConfigFile());
+        $googleClient->setRedirectUri(url('/callback'));
+        $googleClient->setScopes(Google_Service_Drive::DRIVE);
+        $googleClient->setAccessType('offline');
+
+        $authCode = '';
+        $googleClient->fetchAccessTokenWithAuthCode($authCode);
+
+        return $googleClient->getAccessToken();
     }
 
     protected function getAuthConfigFile()
@@ -59,5 +69,23 @@ class ExampleController extends Controller
     public function callback(Request $request)
     {
         return $request->all();
+    }
+
+    public function getDriveListFiles()
+    {
+        $googleClient = new GoogleClient();
+        $googleClient->addScope(Google_Service_Drive::DRIVE);
+
+        $accessToken = '';
+        $googleClient->setAccessToken($accessToken);
+
+        $drive = new Google_Service_Drive($googleClient);
+        $files = $drive->files->listFiles([])->getFiles();
+
+        foreach ($files as $key => $file) {
+            echo $file->name;
+        }
+
+        // \dd($files);
     }
 }

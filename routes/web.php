@@ -26,14 +26,24 @@ $router->group([
     'as' => 'examples',
 ], function () use ($router) {
 
+    $router->get('/auth-code', [
+        'as' => 'get_auth_code',
+        'uses' => 'ExampleController@getAuthCode',
+    ]);
+
     $router->get('/access-token', [
-        'as' => 'access_token',
-        'uses' => 'ExampleController@getAccessTokens',
+        'as' => 'get_access_token',
+        'uses' => 'ExampleController@getAccessToken',
     ]);
 
     $router->get('/callback', [
         'as' => 'callback',
         'uses' => 'ExampleController@callback'
+    ]);
+
+    $router->get('/drive-list-files', [
+        'as' => 'drive_list_files',
+        'uses' => 'ExampleController@getDriveListFiles',
     ]);
 
     $router->get('/test', [
