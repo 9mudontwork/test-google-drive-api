@@ -23,9 +23,9 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-$app->withFacades(true, [
-    'PulkitJalan\Google\Facades\Google' => 'Google'
-]);
+// $app->withFacades(true, [
+//     'PulkitJalan\Google\Facades\Google' => 'Google'
+// ]);
 
 // $app->withEloquent();
 
@@ -98,8 +98,7 @@ $app->configure('filesystems');
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
-$app->register(App\Providers\GoogleDriveServiceProvider::class);
-$app->register(PulkitJalan\Google\GoogleServiceProvider::class);
+// $app->register(App\Providers\GoogleDriveServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

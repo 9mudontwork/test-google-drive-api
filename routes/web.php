@@ -2,52 +2,85 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
-|
-*/
+/**
+ *
+ *
+ * กำลัง research
+ *
+ *
+ */
+
+/**
+ * docs oauth
+ * https://github.com/googleapis/google-api-php-client/blob/master/docs/oauth-web.md
+ * https://developers.google.com/identity/protocols/oauth2/web-server#php
+ *
+ * docs เอา token
+ * https://github.com/googleapis/google-api-php-client/blob/master/examples/idtoken.php
+ *
+ * docs google drive api v3
+ * https://developers.google.com/drive/api/v3/about-files
+ */
+
+use Illuminate\Http\Request;
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-// $router->get('/example', [
-//     'as' => 'example', 'uses' => 'ExampleController@index'
-// ]);
+$router->get('/auth-code', function () {
+    $authConfig = base_path('client_secret.json');
+    $googleClient = new Google\Client();
+    $googleClient->setAuthConfig($authConfig);
+    $googleClient->setRedirectUri(url('/callback'));
+    $googleClient->setScopes(Google_Service_Drive::DRIVE);
+    $googleClient->setApprovalPrompt('force');
+    $googleClient->setAccessType('offline');
+    $authUrl = $googleClient->createAuthUrl();
 
-$router->group([
-    // 'namespace' => 'Example',
-    'as' => 'examples',
-], function () use ($router) {
+    return $authUrl;
+});
 
-    $router->get('/auth-code', [
-        'as' => 'get_auth_code',
-        'uses' => 'ExampleController@getAuthCode',
-    ]);
+$router->get('callback', function (Request $request) {
+    return $request->all();
+});
 
-    $router->get('/access-token', [
-        'as' => 'get_access_token',
-        'uses' => 'ExampleController@getAccessToken',
-    ]);
+$router->get('access-token', function () {
+    $authCode = '';
+    $authConfig = base_path('client_secret.json');
+    $googleClient = new Google\Client();
+    $googleClient->setAuthConfig($authConfig);
+    $googleClient->setRedirectUri(url('/callback'));
+    $googleClient->setScopes(Google_Service_Drive::DRIVE);
+    $googleClient->setAccessType('offline');
+    $googleClient->fetchAccessTokenWithAuthCode($authCode);
+    $accessToken = $googleClient->getAccessToken();
 
-    $router->get('/callback', [
-        'as' => 'callback',
-        'uses' => 'ExampleController@callback'
-    ]);
+    return $accessToken;
+});
 
-    $router->get('/drive-list-files', [
-        'as' => 'drive_list_files',
-        'uses' => 'ExampleController@getDriveListFiles',
-    ]);
+$router->get('refresh-access-token', function () {
+    $refreshToken = config('filesystems.disks.google.refreshToken');
+    $authConfig = base_path('client_secret.json');
+    $googleClient = new Google\Client();
+    $googleClient->setAuthConfig($authConfig);
+    $googleClient->setScopes(Google_Service_Drive::DRIVE);
+    $googleClient->refreshToken($refreshToken);
+    $accessToken = $googleClient->getAccessToken();
 
-    $router->get('/test', [
-        'as' => 'test',
-        'uses' => 'ExampleController@getAuthConfigFile',
-    ]);
+    return $accessToken;
+});
+
+$router->get('files', function () {
+    $accessToken = '';
+    $googleClient = new Google\Client();
+    $googleClient->setAccessToken($accessToken);
+
+    $drive = new Google_Service_Drive($googleClient);
+    $files = $drive->files->listFiles([
+        'q' => "name contains 'one piece'",
+        'fields' => 'files(id,mimeType,name)',
+    ])->getFiles();
+
+    return $files;
 });

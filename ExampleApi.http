@@ -1,6 +1,25 @@
 @exampleUrl = http://test-google-drive-api.com
 
+GET {{exampleUrl}}
+Content-Type: application/json
+
+###
+
 GET {{exampleUrl}}/auth-code
 Content-Type: application/json
+
+###
+
+GET {{exampleUrl}}/access-token
+Content-Type: application/json
+
+###
+
+GET {{exampleUrl}}/refresh-access-token
+Content-Type: application/json
+
+###
+
+GET {{exampleUrl}}/files
 
 ###
