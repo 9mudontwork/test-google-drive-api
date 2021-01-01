@@ -23,3 +23,7 @@ Content-Type: application/json
 GET {{exampleUrl}}/files
 
 ###
+
+GET {{exampleUrl}}/search-folder
+
+###

@@ -72,13 +72,27 @@ $router->get('refresh-access-token', function () {
 });
 
 $router->get('files', function () {
-    $accessToken = '';
+    $accessToken = env('GOOGLE_DRIVE_ACCESS_TOKEN', null);
     $googleClient = new Google\Client();
     $googleClient->setAccessToken($accessToken);
 
     $drive = new Google_Service_Drive($googleClient);
     $files = $drive->files->listFiles([
-        'q' => "name contains 'one piece'",
+        'q' => "name contains 'download'",
+        // 'fields' => 'files(id,mimeType,name)',
+    ])->getFiles();
+
+    return $files;
+});
+
+$router->get('search-folder', function () {
+    $accessToken = env('GOOGLE_DRIVE_ACCESS_TOKEN', null);
+    $googleClient = new Google\Client();
+    $googleClient->setAccessToken($accessToken);
+
+    $drive = new Google_Service_Drive($googleClient);
+    $files = $drive->files->listFiles([
+        'q' => "fullText contains '\"one piece\"' and mimeType = 'application/vnd.google-apps.folder'",
         'fields' => 'files(id,mimeType,name)',
     ])->getFiles();
 
